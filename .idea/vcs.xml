@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="VcsDirectoryMappings">
+    <mapping directory="$PROJECT_DIR$/.." vcs="Git" />
+    <mapping directory="$PROJECT_DIR$" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/BasketballScoreCount" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Earthquake" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/JustJava" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Mitch_Course_Applications" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Mitch_food" vcs="Git" />
+    <mapping directory="$PROJECT_DIR$/Soonami" vcs="Git" />
+  </component>
+</project>
