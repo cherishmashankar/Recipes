@@ -24,9 +24,11 @@ android {
 
 dependencies {
 
+
     def lifecycle_version = "1.1.1"
     def retrofitVersion = "2.5.0"
     def supportVersion = "28.0.0"
+    def support = "27.1.1"
 
     implementation fileTree(dir: "libs", include: ["*.jar"])
     implementation 'androidx.appcompat:appcompat:1.3.0'
@@ -52,5 +54,12 @@ dependencies {
     //Glide Dependencies for loading images
     implementation 'com.github.bumptech.glide:glide:4.12.0'
     annotationProcessor 'com.github.bumptech.glide:compiler:4.12.0'
+
+    ///To edit the Toolbar
+    implementation "com.android.support:design:$support"
+
+    //CircleImageView Dependencies
+    implementation 'de.hdodenhof:circleimageview:3.1.0'
+
 
 }

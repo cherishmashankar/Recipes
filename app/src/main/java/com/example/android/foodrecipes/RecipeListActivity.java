@@ -1,6 +1,8 @@
 package com.example.android.foodrecipes;
 
+import androidx.activity.OnBackPressedDispatcherOwner;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.SearchView;
 import androidx.lifecycle.Observer;
 import androidx.lifecycle.ViewModelProvider;
 import androidx.lifecycle.ViewModelProviders;
@@ -51,33 +53,36 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
         mRecipeListViewModel = ViewModelProviders.of(this).get(RecipeListViewModel.class);
         mRecyclerView = findViewById(R.id.recipe_list_recyclerView);
 
-
         initialiseRecyclerView();
-       subscribeObserver();
-       testRetro();
+        subscribeObserver();
+        initSearchView();
 
+        if(!mRecipeListViewModel.getIsViewingRecipe()){
+            displaySearchCategory();
+        }
 
+    }
+
+    @Override
+    public void onBackPressed() {
+        if (mRecipeListViewModel.ifBackPressed()) {
+        displaySearchCategory();
+        } else{
+            super.onBackPressed();
+    }
     }
 
     private void subscribeObserver(){
         mRecipeListViewModel.getRecipes().observe(this, new Observer<List<Recipe>>() {
             @Override
             public void onChanged(List<Recipe> recipes) {
-                if(recipes != null) {
-                    Testing.printRecipes(recipes, TAG);
+                if(recipes != null  && mRecipeListViewModel.getIsViewingRecipe()) {
+
                     mRecipeRecyclerAdapter.setRecipes(recipes);
                 }
 
             }
         });
-    }
-
-    public void searchRecipeApi(String query, int pageNumber){
-        mRecipeListViewModel.searchRecipeApi(query,pageNumber);
-    }
-
-    private void testRetro(){
-        searchRecipeApi("Indian",1);
     }
 
     private void initialiseRecyclerView(){
@@ -87,6 +92,28 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     }
 
+    private void initSearchView(){
+        final androidx.appcompat.widget.SearchView searchView = findViewById(R.id.search_view);
+        searchView.setOnQueryTextListener(new SearchView.OnQueryTextListener() {
+            @Override
+            public boolean onQueryTextSubmit(String query) {
+                mRecipeRecyclerAdapter.displayLoading();
+                mRecipeListViewModel.searchRecipeApi(query,1);
+                return false;
+            }
+
+            @Override
+            public boolean onQueryTextChange(String newText) {
+                return false;
+            }
+        });
+
+    }
+
+    private void displaySearchCategory(){
+        mRecipeListViewModel.setIsViewingRecipe(false);
+        mRecipeRecyclerAdapter.searchCategories();
+    }
 
     @Override
     public void onRecipeClick(int position) {
@@ -95,8 +122,10 @@ public class RecipeListActivity extends BaseActivity implements OnRecipeListener
 
     @Override
     public void onCategoryClick(String category) {
-
+        mRecipeRecyclerAdapter.displayLoading();
+        mRecipeListViewModel.searchRecipeApi(category,1);
     }
+
 }
 
 

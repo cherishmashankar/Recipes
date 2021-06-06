@@ -82,7 +82,7 @@ public class RecipeApiClient {
                 }
                 if(response.code() == 200){
                     List<Recipe> list = new ArrayList<>(((RecipeSearchResponse)response.body()).getRecipes());
-                    Log.e(TAG, "run: Checpoint 1:" + list);
+
                     if(pageNumber == 1){
                         mRecipe.postValue(list);
                     }else{
