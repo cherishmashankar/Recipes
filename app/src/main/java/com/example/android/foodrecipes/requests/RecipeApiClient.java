@@ -7,16 +7,14 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.android.foodrecipes.AppExecutor;
 import com.example.android.foodrecipes.models.Recipe;
+import com.example.android.foodrecipes.requests.response.RecipeSearchResponse;
+import com.example.android.foodrecipes.utils.Constants;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
-
-import com.example.android.foodrecipes.requests.response.RecipeSearchResponse;
-import com.example.android.foodrecipes.utils.Constants;
-import com.example.android.foodrecipes.utils.Constants;
 
 import retrofit2.Call;
 import retrofit2.Response;
@@ -84,6 +82,7 @@ public class RecipeApiClient {
                 }
                 if(response.code() == 200){
                     List<Recipe> list = new ArrayList<>(((RecipeSearchResponse)response.body()).getRecipes());
+                    Log.e(TAG, "run: Checpoint 1:" + list);
                     if(pageNumber == 1){
                         mRecipe.postValue(list);
                     }else{
