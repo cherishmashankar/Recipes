@@ -106,7 +106,13 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public int getItemViewType(int position) {
         if(mRecipes.get(position).getSocialUrl() ==  -1) {
             return CATEGORY_TYPE;
-        }else if(mRecipes.get(position).getTitle().equals("LOADING...")){
+        }else if(position == mRecipes.size() -1 &&
+                 position != 0 ||
+                 mRecipes.get(position).getTitle().equals("EXHAUSTED...")){
+            return LOADING_TYPE;
+        }
+
+        else if(mRecipes.get(position).getTitle().equals("LOADING...")){
             return LOADING_TYPE;
         }
         else{
@@ -154,6 +160,12 @@ public class RecipeRecyclerAdapter extends RecyclerView.Adapter<RecyclerView.Vie
     public void setRecipes(List<Recipe> recipes){
         mRecipes = recipes;
         notifyDataSetChanged();
+    }
+
+    public Recipe getSelectedItem(int position){
+        if(mRecipes != null && mRecipes.size() > 0)
+            return mRecipes.get(position);
+        return null;
     }
 
 }

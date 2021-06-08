@@ -10,18 +10,37 @@ public class Recipe implements Parcelable {
     private String title;
     private String publisher;
     private String[] ingredients;
-    private String recipe_id;
+    private String id;
     private String imageUrl;
-
+    private String image_url;
     private float socialUrl;
+    private String recipe_id;
 
-    public Recipe(String title, String publisher, String[] ingredients, String recipe_id, String image_url, float social_rank) {
+    public void setrecipeId(String rID){
+        recipe_id = rID;
+
+    }
+    public String gerecipeId(){
+        return recipe_id;
+    }
+
+    public void setimage_url(String image){
+        image_url = image;
+
+    }
+    public String getimage_url(){
+        return image_url;
+    }
+
+    public Recipe(String title, String publisher, String[] ingredients, String recipe_id, String image_url, float social_rank, String image_url2, String recipeid ) {
         this.title = title;
         this.publisher = publisher;
         this.ingredients = ingredients;
-        this.recipe_id = recipe_id;
+        this.id = recipe_id;
         this.imageUrl = image_url;
         this.socialUrl = social_rank;
+        this.image_url = image_url2;
+        this.recipe_id = recipeid;
     }
 
     public Recipe() {
@@ -31,9 +50,11 @@ public class Recipe implements Parcelable {
         title = in.readString();
         publisher = in.readString();
         ingredients = in.createStringArray();
-        recipe_id = in.readString();
+        id = in.readString();
         imageUrl = in.readString();
         socialUrl = in.readFloat();
+        image_url = in.readString();
+        recipe_id = in.readString();
     }
 
     public static final Creator<Recipe> CREATOR = new Creator<Recipe>() {
@@ -72,12 +93,12 @@ public class Recipe implements Parcelable {
         this.ingredients = ingredients;
     }
 
-    public String getRecipe_id() {
-        return recipe_id;
+    public String getId() {
+        return id;
     }
 
-    public void setRecipe_id(String recipe_id) {
-        this.recipe_id = recipe_id;
+    public void setId(String id) {
+        this.id = id;
     }
 
     public String getImage_url() {
@@ -102,7 +123,7 @@ public class Recipe implements Parcelable {
                 "title='" + title + '\'' +
                 ", publisher='" + publisher + '\'' +
                 ", ingredients=" + Arrays.toString(ingredients) +
-                ", recipe_id='" + recipe_id + '\'' +
+                ", recipe_id='" + id + '\'' +
                 ", image_url='" + imageUrl + '\'' +
                 ", social_rank=" + socialUrl +
                 '}';
@@ -118,8 +139,10 @@ public class Recipe implements Parcelable {
         dest.writeString(title);
         dest.writeString(publisher);
         dest.writeStringArray(ingredients);
-        dest.writeString(recipe_id);
+        dest.writeString(id);
         dest.writeString(imageUrl);
         dest.writeFloat(socialUrl);
+        dest.writeString(image_url);
+        dest.writeString(recipe_id);
     }
 }

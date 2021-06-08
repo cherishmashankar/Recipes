@@ -18,7 +18,7 @@ public interface RecipeApi {
             @Query("page") String page
     );
 
-    // GET RECIPE REQUEST Ex: https://recipesapi.herokuapp.com/api/get?rId=41470
+    // GET RECIPE REQUEST Ex: https://recipesapi.herokuapp.com/api/get?rId=49795
     @GET("api/get")
     Call<RecipeResponse> getRecipe(
             @Query("rId") String recipe_id

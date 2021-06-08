@@ -7,6 +7,7 @@ import androidx.lifecycle.MutableLiveData;
 
 import com.example.android.foodrecipes.AppExecutor;
 import com.example.android.foodrecipes.models.Recipe;
+import com.example.android.foodrecipes.requests.response.RecipeResponse;
 import com.example.android.foodrecipes.requests.response.RecipeSearchResponse;
 import com.example.android.foodrecipes.utils.Constants;
 
@@ -23,11 +24,17 @@ public class RecipeApiClient {
     private static final String TAG = "RecipeApiClient";
 
     private static RecipeApiClient instance;
-    private MutableLiveData<List<Recipe>> mRecipe = new MutableLiveData<>();
+    private MutableLiveData<List<Recipe>> mRecipes;
     private RetrieveRecipesRunnable mRetrieveRecipesRunnable;
+    private MutableLiveData<Recipe> mRecipe;
+    private RetrieveRecipeRunnable mRetrieveRecipeRunnable;
+    private MutableLiveData<Boolean> mRecipeTimeOut = new MutableLiveData<>();
+
 
     public RecipeApiClient() {
+        mRecipes = new MutableLiveData<>();
         mRecipe = new MutableLiveData<>();
+
     }
 
     public static RecipeApiClient getInstance(){
@@ -38,8 +45,16 @@ public class RecipeApiClient {
     }
 
     public LiveData<List<Recipe>> getRecipes(){
+        return mRecipes;
+    }
+
+    public LiveData<Recipe> getRecipe(){
         return mRecipe;
     }
+    public LiveData<Boolean> getIsTimeOut(){
+        return mRecipeTimeOut;
+    }
+
 
     public void searchRecipeApi(String query, int pageNumber){
 
@@ -53,10 +68,32 @@ public class RecipeApiClient {
             @Override
             public void run() {
                 // Handler gets cancelled after 3000 ms
+                //mRecipeTimeOut.postValue(true);
                 handler.cancel(true);
 
             }
         }, Constants.NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+    }
+
+    public void searchRecipeById(String recipeID){
+//        mRecipeTimeOut.setValue(false);
+        if(mRetrieveRecipeRunnable != null){
+            mRetrieveRecipeRunnable = null;
+        }
+        mRetrieveRecipeRunnable = new RetrieveRecipeRunnable(recipeID);
+
+        final Future handler = AppExecutor.getInstance().networkIO().submit(mRetrieveRecipeRunnable);
+        mRecipeTimeOut.setValue(false);
+        AppExecutor.getInstance().networkIO().schedule(new Runnable() {
+            @Override
+            public void run() {
+                // Handler gets cancelled after 3000 ms still work has to be done
+                mRecipeTimeOut.postValue(true);
+                handler.cancel(true);
+
+            }
+        }, Constants.NETWORK_TIMEOUT, TimeUnit.MILLISECONDS);
+
     }
 
 
@@ -77,26 +114,31 @@ public class RecipeApiClient {
             try {
                 Response response = getRecipes(query,pageNumber).execute();
 
+
                 if(cancelRequest){
                     return;
                 }
                 if(response.code() == 200){
+
                     List<Recipe> list = new ArrayList<>(((RecipeSearchResponse)response.body()).getRecipes());
 
                     if(pageNumber == 1){
-                        mRecipe.postValue(list);
+
+                        mRecipes.postValue(list);
                     }else{
-                        List<Recipe> currentRecipe = mRecipe.getValue();
+
+                        List<Recipe> currentRecipe = mRecipes.getValue();
                         currentRecipe.addAll(list);
+                        mRecipes.postValue(currentRecipe);
                     }
                 }else{
                     String error = response.errorBody().string();
                     Log.e(TAG, "error: " + error );
-                    mRecipe.postValue(null);
+                    mRecipes.postValue(null);
                 }
             } catch (IOException e) {
                 e.printStackTrace();
-                mRecipe.postValue(null);
+                mRecipes.postValue(null);
             }
 
 
@@ -110,5 +152,81 @@ public class RecipeApiClient {
             Log.e(TAG, "cancelRequest:");
             cancelRequest = true;
         }
+    }
+
+    private class RetrieveRecipeRunnable implements Runnable{
+
+        private String recipeId;
+        private int pageNumber;
+        boolean cancelRequest;
+
+        public RetrieveRecipeRunnable(String recipeId) {
+            this.recipeId = recipeId;
+            cancelRequest = false;
+        }
+
+        @Override
+        public void run() {
+            try {
+                Response response = getRecipe(recipeId).execute();
+
+                if(cancelRequest){
+                    return;
+                }
+                if(response.code() == 200){
+                    Recipe recipe = ((RecipeResponse)response.body()).getRecipe();
+                    mRecipe.postValue(recipe);
+
+                }else{
+                    String error = response.errorBody().string();
+                    Log.e(TAG, "error: " + error );
+                    mRecipe.postValue(null);
+                }
+            }catch (IOException e) {
+                e.printStackTrace();
+                mRecipe.postValue(null);
+            }
+
+        }
+
+        private Call<RecipeResponse> getRecipe(String recipeId){
+            return ServiceGenerator.getRecipeApi().getRecipe(recipeId);
+        }
+
+        private void cancelRequest(){
+            Log.e(TAG, "cancelRequest:");
+            cancelRequest = true;
+        }
+    }
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+    public void cancelRequest(){
+        if(mRetrieveRecipesRunnable != null){
+            mRetrieveRecipesRunnable.cancelRequest();
+         }
+        if(mRetrieveRecipeRunnable != null){
+            mRetrieveRecipeRunnable.cancelRequest();
+        }
+
     }
 }
