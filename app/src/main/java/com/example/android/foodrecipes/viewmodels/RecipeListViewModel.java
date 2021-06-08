@@ -60,7 +60,7 @@ public class RecipeListViewModel extends ViewModel {
     }
 
     public void searchNextPage(){
-        if(mIsViewingRecipe && !mIsPerformingQuery) {
+        if(mIsViewingRecipe && !mIsPerformingQuery && !getIsDataExhausted().getValue()) {
             mRecipeRepository.searchNextPage();
            
         }
@@ -68,5 +68,9 @@ public class RecipeListViewModel extends ViewModel {
 
     public void setIsPerformingQuery(Boolean mIsPerformingQuery) {
         this.mIsPerformingQuery = mIsPerformingQuery;
+    }
+
+    public MutableLiveData<Boolean> getIsDataExhausted() {
+        return mRecipeRepository.getIsDataExhausted();
     }
 }

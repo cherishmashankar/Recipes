@@ -3,6 +3,7 @@ package com.example.android.foodrecipes.viewmodels;
 import android.util.Log;
 
 import androidx.lifecycle.LiveData;
+import androidx.lifecycle.MutableLiveData;
 import androidx.lifecycle.ViewModel;
 import androidx.lifecycle.ViewModelProvider;
 
@@ -49,4 +50,6 @@ public class RecipeViewModel extends ViewModel {
     public void setmDidRetrieveData(Boolean mDidRetrieveData) {
         this.mDidRetrieveData = mDidRetrieveData;
     }
+
+
 }

@@ -1,4 +1,5 @@
 <resources>
     <string name="app_name">foodRecipes</string>
     <string name="categories">Categories</string>
+    <string name="no_more_results">No more results...</string>
 </resources>
